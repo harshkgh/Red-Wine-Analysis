@@ -1,0 +1,91 @@
+---
+title: "Final project"
+author: "Harsh Panchal"
+date: "2023-11-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r importing the Dataset and loading the libraries}
+
+#install.packages("readxl")
+#install.packages("ggExtra")
+library(ggplot2)
+library(readxl)
+#raw_data <- read.csv("D:/UMASS Fall 23/Fall 2023 Course Syllabus/Descriptive Analytics/Project/wine/winequality-red.csv", sep=";")
+
+#raw_data2 <- read.csv(D:/UMASS Fall 23/Fall 2023 Course Syllabus/Descriptive Analytics/Project/wine/winequality-red_new.csv", sep=";")
+summary(winequality_red_new)
+```
+
+
+
+``` {r Regression}
+# Simple Regression
+#Normality
+hist(winequality_red_new$fixed.acidity)
+
+#scatter plot Linearity
+plot(data=winequality_red_new,winequality_red_new$fixed.acidity ~ winequality_red_new$quality)
+
+ggplot(winequality_red_new, aes(x=fixed.acidity, y=quality)) + geom_point() + 
+labs(title = "Fixed Acidity vs. Quality", x = "Fixed Acidity", y = "Quality")
+
+reg_lin <- lm(data=winequality_red_new, winequality_red_new$fixed.acidity ~ winequality_red_new$quality)
+summary(reg_lin)
+
+#Multiple Regression
+
+#Correlation Analysis
+cor(winequality_red_new$fixed.acidity, winequality_red_new$alcohol)
+
+#Normality  
+hist(winequality_red_new$quality)
+
+#Linearity
+plot(data=winequality_red_new, winequality_red_new$fixed.acidity ~ winequality_red_new$quality)
+plot(data=winequality_red_new, winequality_red_new$alcohol ~ winequality_red_new$quality)
+
+multi_reg <- lm(data=winequality_red_new, winequality_red_new$quality ~ winequality_red_new$fixed.acidity + winequality_red_new$total.sulfurdioxide)
+summary(multi_reg)
+```
+
+
+```{r Scatterplot}
+
+#Graph of Fixed acidity vs Total Sulphurdioxide for Quality
+ggplot(data = winequality_red_new, aes(x=total.sulfurdioxide,y=fixed.acidity, color=quality)) +geom_point(shape=16)+geom_smooth(method=lm, linetype="dashed",color="red", fill="yellow")+ggtitle("Relation of Fixed acidity and Total Sulfurdioxide for Quality") +labs(x="Total Sulfurdioxide" ,y="Fixed Acidity")
+
+#Graph of Sugar vs Alcohol for Quality
+ggplot(data = winequality_red_new, aes(x=residual.sugar,y=alcohol, color=pH)) +geom_point(shape=16)+geom_smooth(method=lm, linetype="dashed",color="darkgreen", fill="green")+ggtitle("Relation of Sugar and Alcohol for pH") +labs(x="Sugar",y="Alcohol")
+
+```
+``` {r Outier}
+
+#all observations that lie outside the interval formed by the 2 and 98 percentiles will be considered as potential outliers
+
+lower_bound <- quantile(winequality_red_new$fixed.acidity,0.02)
+upper_bound <- quantile(winequality_red_new$fixed.acidity, 0.98)
+outlier_ind <- which(winequality_red_new$fixed.acidity < lower_bound | winequality_red_new$fixed.acidity > upper_bound)
+
+winequality_red_new[outlier_ind, "fixed.acidity"]
+
+#all observations that lie outside the interval formed by the 2 and 98 percentiles will be considered as potential outliers
+
+lower_bound <- quantile(winequality_red_new$total.sulfurdioxide,0.02)
+upper_bound <- quantile(winequality_red_new$total.sulfurdioxide, 0.98)
+outlier_ind <- which(winequality_red_new$total.sulfurdioxide < lower_bound | winequality_red_new$total.sulfurdioxide > upper_bound)
+
+winequality_red_new[outlier_ind, "total.sulfurdioxide"]
+
+```
+
